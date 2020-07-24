@@ -44,7 +44,7 @@ async def send_sms(request):
             response = requests.post(ALIGO_URL + aligo_suffix, data=aligo_data)
             aligo_body = response.json()
             if int(aligo_body.get('result_code')) < 0:
-                print('알리고에서 문자전송에 실패한 케이습니다.')
+                print('알리고에서 문자전송에 실패한 케이스입니다.')
                 message = {
                     'message': aligo_body.get('message')
                 }
