@@ -39,7 +39,8 @@ async def send_sms(request):
             'msg_type': 'SMS',
         }
         try:
-            ''' this will be deprecated
+            # TODO: requests will be deprecated
+            '''
             aligo_suffix = '/send/'
             response = requests.post(ALIGO_URL + aligo_suffix, data=aligo_data)
             aligo_body = response.json()
@@ -56,6 +57,7 @@ async def send_sms(request):
                 message = {
                     'message': aligo_body.get('message')
                 }
+                message.update({'status': 'fail'})  # TODO: this will be deprecated
                 status_code = 400
             else:
                 message = {
@@ -64,6 +66,7 @@ async def send_sms(request):
                         {'msg_id': aligo_body.get('msg_id')}
                     ]
                 }
+                message.update({'status': 'success'})  # TODO: this will be deprecated
         except Exception as error:
             message = {
                 'message': '문자전송 서비스에서 에러가 발생했습니다. 잠시 후에 다시 시도해주세요.',
@@ -71,6 +74,7 @@ async def send_sms(request):
                     {'error_message': f'{str(error)}'}
                 ]
             }
+            message.update({'status': 'fail'})  # TODO: this will be deprecated
             status_code = 500
         finally:
             return json(message, status_code)
