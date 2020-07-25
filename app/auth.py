@@ -6,9 +6,8 @@ def authorized():
     def decorator(f):
         @wraps(f)
         async def decorated_function(request, *args, **kwargs):
-            white_list = ['127.0.0.1']
-            ip = request.ip
-            is_authorized = ip in white_list
+            token = request.token
+            is_authorized = token is not None  # TODO : Authorization Key Setting
 
             if is_authorized:
                 # the user is authorized.
@@ -17,7 +16,7 @@ def authorized():
                 return response
             else:
                 # the user is not authorized.
-                return json({'message': 'Not Authorized'}, 403)
+                return json({'message': 'Forbidden'}, 403)
 
         return decorated_function
 

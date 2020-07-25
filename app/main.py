@@ -1,8 +1,10 @@
 from sanic import Sanic
-from sanic.response import json
-import requests
+from sanic.response import json, text
 from dotenv import load_dotenv
 import os
+from app.aligo import aligo_sms
+from app.auth import authorized
+import asyncio
 
 load_dotenv()
 
@@ -15,12 +17,9 @@ app = Sanic(__name__)
 
 
 @app.get('/')
+@authorized()
 async def main(request):
-    return json(
-        {
-            "ip": request.ip,
-         }
-    )
+    return text(request.server_name)
 
 
 @app.route('/send/sms', methods=['POST'])
@@ -40,9 +39,18 @@ async def send_sms(request):
             'msg_type': 'SMS',
         }
         try:
+            ''' this will be deprecated
             aligo_suffix = '/send/'
             response = requests.post(ALIGO_URL + aligo_suffix, data=aligo_data)
             aligo_body = response.json()
+            '''
+            # TODO : Search Use and Exception Cases
+            # loop = app.loop
+            aligo_task = asyncio.create_task(aligo_sms(aligo_data))  # == (app.)loop.create_task()
+            aligo_body = await aligo_task
+            # try aligo_body = await asyncio.wait_for(aligo_sms(aligo_data), timeout=3.0) except asyncio.TimeoutError
+            # try aligo_body = await asyncio.wait_for(aligo_task, timeout=3.0) except asyncio.TimeoutError
+
             if int(aligo_body.get('result_code')) < 0:
                 print('알리고에서 문자전송에 실패한 케이스입니다.')
                 message = {
@@ -58,7 +66,7 @@ async def send_sms(request):
                 }
         except Exception as error:
             message = {
-                'message': '알리고 서비스에서 에러가 발생했습니다. 잠시 후에 다시 시도해주세요.',
+                'message': '문자전송 서비스에서 에러가 발생했습니다. 잠시 후에 다시 시도해주세요.',
                 'data': [
                     {'error_message': f'{str(error)}'}
                 ]
