@@ -19,7 +19,8 @@ app = Sanic(__name__)
 @app.get('/')
 @authorized()
 async def main(request):
-    return text(request.server_name)
+    ip = request.headers.get('X-Real-IP')
+    return text(ip)
 
 
 @app.route('/send/sms', methods=['POST'])
