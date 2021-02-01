@@ -23,7 +23,7 @@ Write your env config(aligo key, id, phone) on .env file or export in bash
 - pip install -r requirements.txt
 - uvicorn app.main:app
 
-## Extra setting (systemd, really useful)
+## Extra setting (systemd)
 - vi /etc/systemd/system/project-name.socket & project-name.service
 - systemctl daemon-reload
 - systemctl enable socket & service
