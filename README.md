@@ -4,7 +4,7 @@
 Python >= 3.8
 
 [ALIGO](https://smartsms.aligo.in/admin/api/info.html)
-문자전송 서비스. 저렴하고 API도 잘 되어있습니다. (앞광고)
+문자전송 서비스
 
 [Sanic Framework](https://sanic.readthedocs.io/)
 Web Framework that allows the usage of the async/await syntax, faster than flask
