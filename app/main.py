@@ -36,6 +36,7 @@ async def send_sms(request):
             "receiver": body.get("receiver"),
             "msg": body.get("msg"),
             "msg_type": body.get("msg_type") or "SMS",
+            "title": body.get("title"),
         }
         try:
             aligo_task = asyncio.create_task(aligo_sms(aligo_data))
