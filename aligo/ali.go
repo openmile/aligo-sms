@@ -8,6 +8,7 @@ import (
 )
 
 type SendData struct {
+	AKey     string `json:"a_key"` // only used for req client
 	Key      string `json:"key"`
 	UserId   string `json:"user_id"`
 	Sender   string `json:"sender"`
@@ -18,12 +19,12 @@ type SendData struct {
 }
 
 type ReceiveData struct {
-	ResultCode interface{}  `json:"result_code"`
-	Message    string  `json:"message"`
-	MsgId      string  `json:"msg_id"`
-	SuccessCnt float64 `json:"success_cnt"`
-	ErrorCnt   float64 `json:"error_cnt"`
-	MsgType    string  `json:"msg_type"`
+	ResultCode interface{} `json:"result_code"`
+	Message    string      `json:"message"`
+	MsgId      string      `json:"msg_id"`
+	SuccessCnt float64     `json:"success_cnt"`
+	ErrorCnt   float64     `json:"error_cnt"`
+	MsgType    string      `json:"msg_type"`
 }
 
 func PostAligo(data *SendData) ReceiveData {
@@ -41,14 +42,15 @@ func PostAligo(data *SendData) ReceiveData {
 	client := &http.Client{}
 	resp, err := client.PostForm("https://apis.aligo.in/send/", formData)
 	if err != nil {
-		aligoRes.ResultCode = "-1"
+		aligoRes.ResultCode = -1
 		aligoRes.Message = "Aligo connection error: 잠시 후에 다시 시도해주세요."
 		//log.Fatal(err)
 	}
+
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			aligoRes.ResultCode = "-1"
+			aligoRes.ResultCode = -1
 			aligoRes.Message = "IO close error: 잠시 후에 다시 시도해주세요."
 			//log.Fatal(err)
 		}
@@ -57,10 +59,11 @@ func PostAligo(data *SendData) ReceiveData {
 	func(Body io.ReadCloser) {
 		err := json.NewDecoder(resp.Body).Decode(&aligoRes)
 		if err != nil {
-			aligoRes.ResultCode = "-1"
+			aligoRes.ResultCode = -1
 			aligoRes.Message = "JSON decode error: 잠시 후에 다시 시도해주세요."
 			//log.Fatal(err)
 		}
 	}(resp.Body)
+
 	return aligoRes
 }

@@ -29,12 +29,23 @@ func main() {
 		Prefork:      true,
 		AppName:      "FUELLAB SMS v2.0.0",
 		ServerHeader: "fuellab simple sms",
+		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			code := fiber.StatusForbidden
+
+			if e, ok := err.(*fiber.Error); ok {
+				code = e.Code
+			}
+
+			err = ctx.Status(code).JSON(fiber.Map{
+				"message": "Forbidden", "status": "fail",
+			})
+			return nil
+		},
 	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Status(403).JSON(fiber.Map{
-			"message": "Forbidden",
-			"status":  "fail",
+			"message": "Forbidden", "status": "fail",
 		})
 	})
 
@@ -43,17 +54,18 @@ func main() {
 		if err := c.BodyParser(sendData); err != nil {
 			log.Print(err)
 			return c.Status(403).JSON(fiber.Map{
-				"message": "Invalid body",
-				"status":  "fail",
+				"message": "Invalid body", "status": "fail",
+			})
+		}
+		if sendData.AKey != aligoKey {
+			return c.Status(403).JSON(fiber.Map{
+				"message": "알리고 키 인증에 실패했습니다.", "status": "fail",
 			})
 		}
 
-		if aligoKey != sendData.Key {
-			return c.Status(403).JSON(fiber.Map{
-				"message": "알리고 키 인증에 실패했습니다.",
-				"status":  "fail",
-			})
-		}
+		sendData.Key = aligoKey
+		sendData.UserId = readEnv("ALIGO_ID")
+		sendData.Sender = readEnv("ALIGO_PHONE")
 
 		aligoRes := aligo.PostAligo(sendData)
 
@@ -68,13 +80,11 @@ func main() {
 		detail["msg_id"] = aligoRes.MsgId
 
 		return c.JSON(fiber.Map{
-			"message": "문자전송에 성공하였습니다.",
-			"status":  "success",
-			"data":    detail,
+			"message": "문자전송에 성공하였습니다.", "status": "success", "data": detail,
 		})
 	})
 
-	err := app.Listen(":3000")
+	err := app.Listen(":9001")
 	if err != nil {
 		return
 	}
