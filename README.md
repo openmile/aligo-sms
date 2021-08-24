@@ -1,30 +1,24 @@
-# simple-sms with ALIGO
-알리고 SMS 전송을 다루는 간단한 웹 서비스. 미리 등록해놓은 IP에서만 알리고 API 콜을 할 수 있어서 작은 서버용으로 만든 것.
+# simple-sms with Ali.Go
+알리고 SMS 발송을 처리하는 간단한 웹 서비스. 미리 등록해놓은 IP에서만 알리고 API 콜을 할 수 있어서 작은 서버용으로 만든 것.
 
-Python >= 3.8
+**Go1.17**
 
-[ALIGO](https://smartsms.aligo.in/admin/api/info.html)
+- Version 1.14 or higher is required.
+
+- [ALIGO](https://smartsms.aligo.in/admin/api/info.html)
 문자전송 서비스
 
-[Sanic Framework](https://sanic.readthedocs.io/)
-Web Framework that allows the usage of the async/await syntax, faster than flask
+- [Fiber](https://github.com/gofiber/fiber)
+Fiber is an Express inspired web framework built on top of [Fasthttp](https://github.com/valyala/fasthttp).
 
-[AIOHTTP](https://docs.aiohttp.org/en/stable/)
-Asynchronous HTTP Client/Server for asyncio and Python. In this project, only use Client
-
-[Uvicorn](https://www.uvicorn.org/)
-ASGI server, built on uvloop and httptools
+- [Viper](https://github.com/spf13/viper)
+Viper is a complete configuration solution for Go applications including 12-Factor apps.
 
 ## Run service
-Write your env config(aligo key, id, phone) on .env file or export in bash
+Write .env file with required key
 
-- python -m venv my-venv/project-name
-- source my-venv/project-name/bin/activate
-- pip install -r requirements.txt
-- uvicorn app.main:app
 
-## Extra setting (systemd)
-- vi /etc/systemd/system/project-name.socket & project-name.service
+## Set systemd(systemctl) at linux
+- vi /etc/systemd/system/my-name.service
 - systemctl daemon-reload
-- systemctl enable socket & service
-- systemctl start socket & service
+- systemctl start my-service
