@@ -42,14 +42,14 @@ func PostAligo(data *SendData) ReceiveData {
 	resp, err := client.PostForm("https://apis.aligo.in/send/", formData)
 	if err != nil {
 		aligoRes.ResultCode = -1
-		aligoRes.Message = "문자전송 서비스와의 통신 중에서 에러가 발생했습니다. 잠시 후에 다시 시도해주세요."
+		aligoRes.Message = "Aligo connection error: 잠시 후에 다시 시도해주세요."
 		//log.Fatal(err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
 			aligoRes.ResultCode = -1
-			aligoRes.Message = "IO close error after response decoded"
+			aligoRes.Message = "IO close error: 잠시 후에 다시 시도해주세요."
 			//log.Fatal(err)
 		}
 	}(resp.Body)
@@ -58,7 +58,7 @@ func PostAligo(data *SendData) ReceiveData {
 		err := json.NewDecoder(resp.Body).Decode(&aligoRes)
 		if err != nil {
 			aligoRes.ResultCode = -1
-			aligoRes.Message = "Decode error: 알리고 응답값 처리에러"
+			aligoRes.Message = "JSON decode error: 잠시 후에 다시 시도해주세요."
 			//log.Fatal(err)
 		}
 	}(resp.Body)

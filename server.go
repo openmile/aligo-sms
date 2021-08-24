@@ -12,7 +12,7 @@ func readEnv(key string) string {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatalf("Read env file error %s", err)
+		log.Fatalf("Error reading env file: %s", err)
 	}
 
 	value, ok := viper.Get(key).(string)
@@ -25,7 +25,11 @@ func readEnv(key string) string {
 func main() {
 	aligoKey := readEnv("ALIGO_KEY")
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		Prefork:      true,
+		AppName:      "FUELLAB SMS v2.0.0",
+		ServerHeader: "fuellab simple sms",
+	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Status(403).JSON(fiber.Map{
@@ -34,7 +38,7 @@ func main() {
 		})
 	})
 
-	app.Get("/send/sms", func(c *fiber.Ctx) error {
+	app.Post("/send/sms", func(c *fiber.Ctx) error {
 		sendData := new(aligo.SendData)
 		if err := c.BodyParser(sendData); err != nil {
 			log.Print(err)
@@ -56,7 +60,7 @@ func main() {
 		if aligoRes.ResultCode < 0 {
 			return c.Status(400).JSON(fiber.Map{
 				"message": aligoRes.Message,
-				"status": "fail",
+				"status":  "fail",
 			})
 		}
 		return c.JSON(aligoRes)
