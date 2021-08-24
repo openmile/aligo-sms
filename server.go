@@ -65,7 +65,15 @@ func main() {
 				"status":  "fail",
 			})
 		}
-		return c.JSON(aligoRes)
+
+		detail := make([]map[string]interface{}, 1)
+		detail[0]["msg_id"] = aligoRes.MsgId
+
+		return c.JSON(fiber.Map{
+			"message": "문자전송에 성공하였습니다.",
+			"status":  "success",
+			"data":    detail,
+		})
 	})
 
 	err := app.Listen(":3000")
