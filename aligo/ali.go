@@ -18,12 +18,12 @@ type SendData struct {
 }
 
 type ReceiveData struct {
-	ResultCode int    `json:"result_code"`
-	Message    string `json:"message"`
-	MsgId      int    `json:"msg_id"`
-	SuccessCnt int    `json:"success_cnt"`
-	ErrorCnt   int    `json:"error_cnt"`
-	MsgType    string `json:"msg_type"`
+	ResultCode float64 `json:"result_code"`
+	Message    string  `json:"message"`
+	MsgId      float64 `json:"msg_id"`
+	SuccessCnt float64 `json:"success_cnt"`
+	ErrorCnt   float64 `json:"error_cnt"`
+	MsgType    string  `json:"msg_type"`
 }
 
 func PostAligo(data *SendData) ReceiveData {
