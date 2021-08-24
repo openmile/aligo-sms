@@ -18,7 +18,7 @@ type SendData struct {
 }
 
 type ReceiveData struct {
-	ResultCode string  `json:"result_code"`
+	ResultCode interface{}  `json:"result_code"`
 	Message    string  `json:"message"`
 	MsgId      string  `json:"msg_id"`
 	SuccessCnt float64 `json:"success_cnt"`
