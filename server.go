@@ -66,8 +66,8 @@ func main() {
 			})
 		}
 
-		detail := make([]map[string]interface{}, 1)
-		detail[0]["msg_id"] = aligoRes.MsgId
+		detail := make(map[string]string)
+		detail["msg_id"] = aligoRes.MsgId
 
 		return c.JSON(fiber.Map{
 			"message": "문자전송에 성공하였습니다.",
