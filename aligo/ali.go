@@ -18,9 +18,9 @@ type SendData struct {
 }
 
 type ReceiveData struct {
-	ResultCode float64 `json:"result_code"`
+	ResultCode string  `json:"result_code"`
 	Message    string  `json:"message"`
-	MsgId      float64 `json:"msg_id"`
+	MsgId      string  `json:"msg_id"`
 	SuccessCnt float64 `json:"success_cnt"`
 	ErrorCnt   float64 `json:"error_cnt"`
 	MsgType    string  `json:"msg_type"`
@@ -41,14 +41,14 @@ func PostAligo(data *SendData) ReceiveData {
 	client := &http.Client{}
 	resp, err := client.PostForm("https://apis.aligo.in/send/", formData)
 	if err != nil {
-		aligoRes.ResultCode = -1
+		aligoRes.ResultCode = "-1"
 		aligoRes.Message = "Aligo connection error: 잠시 후에 다시 시도해주세요."
 		//log.Fatal(err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			aligoRes.ResultCode = -1
+			aligoRes.ResultCode = "-1"
 			aligoRes.Message = "IO close error: 잠시 후에 다시 시도해주세요."
 			//log.Fatal(err)
 		}
@@ -57,7 +57,7 @@ func PostAligo(data *SendData) ReceiveData {
 	func(Body io.ReadCloser) {
 		err := json.NewDecoder(resp.Body).Decode(&aligoRes)
 		if err != nil {
-			aligoRes.ResultCode = -1
+			aligoRes.ResultCode = "-1"
 			aligoRes.Message = "JSON decode error: 잠시 후에 다시 시도해주세요."
 			//log.Fatal(err)
 		}

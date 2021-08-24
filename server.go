@@ -5,6 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
 	"log"
+	"strconv"
 )
 
 func readEnv(key string) string {
@@ -57,7 +58,8 @@ func main() {
 
 		aligoRes := aligo.PostAligo(sendData)
 
-		if aligoRes.ResultCode < 0 {
+		theCode, _ := strconv.Atoi(aligoRes.ResultCode)
+		if theCode < 0 {
 			return c.Status(400).JSON(fiber.Map{
 				"message": aligoRes.Message,
 				"status":  "fail",
