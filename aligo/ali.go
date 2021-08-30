@@ -8,8 +8,8 @@ import (
 )
 
 type SendData struct {
-	AKey     string `json:"a_key"` // only used for req client
-	Key      string `json:"key"`
+	AKey     string `json:"a_key"` // request (accepted by this server) key name
+	Key      string `json:"key"`   // aligo key name
 	UserId   string `json:"user_id"`
 	Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
@@ -37,33 +37,30 @@ func PostAligo(data *SendData) ReceiveData {
 	formData.Set("msg_type", data.MsgType)
 	formData.Set("title", data.Title)
 
-	var aligoRes ReceiveData
+	aligoRes := new(ReceiveData)
 
 	client := &http.Client{}
 	resp, err := client.PostForm("https://apis.aligo.in/send/", formData)
 	if err != nil {
-		aligoRes.ResultCode = -1
+		aligoRes.ResultCode = "-1"
 		aligoRes.Message = "Aligo connection error: 잠시 후에 다시 시도해주세요."
-		//log.Fatal(err)
 	}
 
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			aligoRes.ResultCode = -1
+			aligoRes.ResultCode = "-1"
 			aligoRes.Message = "IO close error: 잠시 후에 다시 시도해주세요."
-			//log.Fatal(err)
 		}
 	}(resp.Body)
 
 	func(Body io.ReadCloser) {
 		err := json.NewDecoder(resp.Body).Decode(&aligoRes)
 		if err != nil {
-			aligoRes.ResultCode = -1
+			aligoRes.ResultCode = "-1"
 			aligoRes.Message = "JSON decode error: 잠시 후에 다시 시도해주세요."
-			//log.Fatal(err)
 		}
 	}(resp.Body)
 
-	return aligoRes
+	return *aligoRes
 }

@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-func readEnv(key string) string {
+func readENV(key string) string {
 	viper.SetConfigFile(".env")
 
 	err := viper.ReadInConfig()
@@ -22,13 +22,19 @@ func readEnv(key string) string {
 	return value
 }
 
-func main() {
-	aligoKey := readEnv("ALIGO_KEY")
+var aligoKey, aligoID, aligoPhone string
 
+func init() {
+	aligoKey = readENV("ALIGO_KEY")
+	aligoID = readENV("ALIGO_ID")
+	aligoPhone = readENV("ALIGO_PHONE")
+}
+
+func main() {
 	app := fiber.New(fiber.Config{
 		Prefork:      true,
-		AppName:      "FUELLAB SMS v2.0.0",
-		ServerHeader: "fuellab simple sms",
+		AppName:      "FUELLAB SMS V2.0.0",
+		ServerHeader: "FUELLAB Simple SMS",
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			code := fiber.StatusForbidden
 
@@ -36,17 +42,13 @@ func main() {
 				code = e.Code
 			}
 
-			err = ctx.Status(code).JSON(fiber.Map{
-				"message": "Forbidden", "status": "fail",
-			})
+			err = ctx.Status(code).JSON(fiber.Map{"message": "Forbidden"})
 			return nil
 		},
 	})
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(403).JSON(fiber.Map{
-			"message": "Forbidden", "status": "fail",
-		})
+		return c.Status(403).JSON(fiber.Map{"message": "Forbidden"})
 	})
 
 	app.Post("/send/sms", func(c *fiber.Ctx) error {
@@ -64,16 +66,14 @@ func main() {
 		}
 
 		sendData.Key = aligoKey
-		sendData.UserId = readEnv("ALIGO_ID")
-		sendData.Sender = readEnv("ALIGO_PHONE")
+		sendData.UserId = aligoID
+		sendData.Sender = aligoPhone
 
 		aligoRes := aligo.PostAligo(sendData)
 
 		if aligoRes.ResultCode != "1" {
 			return c.Status(400).JSON(fiber.Map{
-				"message": aligoRes.Message,
-				"status":  "fail",
-			})
+				"message": aligoRes.Message, "status": "fail"})
 		}
 
 		detail := make(map[string]string)
