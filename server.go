@@ -35,20 +35,18 @@ func main() {
 		Prefork:      true,
 		AppName:      "FUELLAB SMS V2.0.0",
 		ServerHeader: "FUELLAB Simple SMS",
-		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			code := fiber.StatusForbidden
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			code := fiber.StatusNotFound
+			body := "Not Found"
 
-			if e, ok := err.(*fiber.Error); ok {
+			if e, ok := err.(*fiber.Error); ok && e.Code == fiber.StatusInternalServerError {
 				code = e.Code
+				body = e.Message
 			}
 
-			err = ctx.Status(code).JSON(fiber.Map{"message": "Forbidden"})
+			err = c.Status(code).JSON(fiber.Map{"message": body, "status": "fail"})
 			return nil
 		},
-	})
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(403).JSON(fiber.Map{"message": "Forbidden"})
 	})
 
 	app.Post("/send/sms", func(c *fiber.Ctx) error {
@@ -82,6 +80,10 @@ func main() {
 		return c.JSON(fiber.Map{
 			"message": "문자전송에 성공하였습니다.", "status": "success", "data": detail,
 		})
+	})
+
+	app.Get("/*", func(c *fiber.Ctx) error {
+		return fiber.ErrNotFound
 	})
 
 	err := app.Listen(":9001")
