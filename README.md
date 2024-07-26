@@ -13,12 +13,10 @@
 Write **.env** file in the working directory
 - ALIGO_KEY
 - ALIGO_ID
-- ALIGO_PHONE
-
 
 ## Run it as a daemon
 Use **systemd** on Linux
-- vi /etc/systemd/system/sms-server.service
+- vi /etc/systemd/system/aligo.service
 - systemctl daemon-reload
-- systemctl start sms-server.service
-- (optional) systemctl enable sms-server.service
+- systemctl start aligo.service
+- (optional) systemctl enable aligo.service

@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log"
+
 	"github.com/fuellab/simple-sms/aligo"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/spf13/viper"
-	"log"
 )
 
 func readENV(key string) string {
@@ -23,19 +24,18 @@ func readENV(key string) string {
 	return value
 }
 
-var aligoKey, aligoID, aligoPhone string
+var aligoKey, aligoID string
 
 func init() {
 	aligoKey = readENV("ALIGO_KEY")
 	aligoID = readENV("ALIGO_ID")
-	aligoPhone = readENV("ALIGO_PHONE")
 }
 
 func main() {
 	app := fiber.New(fiber.Config{
 		Prefork:      true,
-		AppName:      "FUELLAB SMS V2.0.0",
-		ServerHeader: "FUELLAB Simple SMS",
+		AppName:      "Aligo SMS",
+		ServerHeader: "OPENMILE Aligo SMS",
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			code := fiber.StatusNotFound
 			body := "Not Found"
@@ -68,10 +68,14 @@ func main() {
 				"message": "알리고 키 인증에 실패했습니다.", "status": "fail",
 			})
 		}
+		if sendData.Sender == "" {
+			return c.Status(400).JSON(fiber.Map{
+				"message": "발신자 전화번호를 보내야 합니다.", "status": "fail",
+			})
+		}
 
 		sendData.Key = aligoKey
 		sendData.UserId = aligoID
-		sendData.Sender = aligoPhone
 
 		aligoRes := aligo.PostAligo(sendData)
 
